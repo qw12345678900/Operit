@@ -1,0 +1,10 @@
+name: ci probe
+on:
+  push:
+    paths: ['.github/workflows/ci-probe.yml']
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "actions work"
