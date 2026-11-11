@@ -2781,7 +2781,7 @@ class EnhancedAIService private constructor(private val context: Context) {
 
         // 获取当前功能类型（通常是聊天模型）的模型配置，用于判断聊天模型是否自带识图能力
         val config = modelConfig
-        val useToolCallApi = config.enableToolCall
+        val useToolCallApi = true // 强制原生 Tool Call API，不再走系统提示词描述
         val chatModelHasDirectImage = config.enableDirectImageProcessing
         val chatModelHasDirectAudio = config.enableDirectAudioProcessing
         val chatModelHasDirectVideo = config.enableDirectVideoProcessing
@@ -3005,10 +3005,7 @@ class EnhancedAIService private constructor(private val context: Context) {
             // 获取对应功能类型的模型配置
             val config = modelConfig
             
-            // 检查是否启用Tool Call
-            if (!config.enableToolCall) {
-                return null
-            }
+            // 强制启用 Tool Call：工具始终以原生 tools 字段下发
 
             val toolExposureMode = ToolExposureMode.resolve(config.apiProviderType)
 

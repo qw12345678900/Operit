@@ -312,7 +312,7 @@ object AIServiceFactory {
         val supportsAudio = config.enableDirectAudioProcessing
         val supportsVideo = config.enableDirectVideoProcessing
         // Tool Call支持标志
-        val enableToolCall = config.enableToolCall
+        val enableToolCall = true // 强制启用原生工具调用
 
         return when (providerType) {
             // OpenAI格式，支持原生和兼容OpenAI API的服务
