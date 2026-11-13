@@ -2915,7 +2915,20 @@ class EnhancedAIService private constructor(private val context: Context) {
                     availableTools = serializePromptHookToolPrompts(availableTools)
                 )
             )
-        return deserializePromptHookToolPrompts(hookContext.availableTools)
+        val filteredTools = deserializePromptHookToolPrompts(hookContext.availableTools)
+        // 防御：插件 hook 可能因为自身 bug 把整张工具表清空（例如只保留某个子包自己的工具，
+        // 而该子包工具此刻并不在 availableTools 里）。一旦清空，宿主返回 null，
+        // 而 native 模式下系统提示词里的工具清单已经被移除，模型将完全看不到任何工具，
+        // 只能把工具调用写成正文文本（DSML/XML），表现为“请求里没有注入 tools”。
+        // 这里回退到 hook 之前的完整列表，保证模型始终拿得到工具。
+        if (filteredTools.isEmpty() && availableTools.isNotEmpty()) {
+            AppLogger.w(
+                TAG,
+                "Tool prompt hook 清空了工具列表(输入=${availableTools.size}个)，已回退为未过滤列表，避免模型失去全部工具"
+            )
+            return availableTools
+        }
+        return filteredTools
     }
 
     /** Cancel the current conversation */
